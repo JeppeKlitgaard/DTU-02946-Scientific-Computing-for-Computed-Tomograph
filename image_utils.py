@@ -117,6 +117,73 @@ def make_rectangle(
     return img
 
 
+# LLM
+def smooth_zero_center(sinogram, sigma=10.0):
+    """
+    Smooth the transition from non-zero boundary values towards zero in the center.
+    Only modifies pixels that are exactly zero - non-zero values are preserved.
+
+    For each column, finds the upper and lower boundaries of the zero region,
+    then applies Gaussian decay from the boundary values towards zero.
+
+    Parameters:
+        sinogram: 2D array with zero region in vertical center
+        sigma: Gaussian decay parameter (larger = slower decay towards zero)
+
+    Returns:
+        Smoothed sinogram with filled center region (non-zero values unchanged)
+    """
+    result = sinogram.copy()
+    n_rows, n_cols = sinogram.shape
+    center = n_rows // 2
+
+    for col in range(n_cols):
+        column = sinogram[:, col]
+
+        # Find upper boundary (last non-zero before center, searching from top)
+        upper_boundary = None
+        for i in range(center, -1, -1):
+            if column[i] != 0:
+                upper_boundary = i
+                break
+
+        # Find lower boundary (first non-zero after center, searching from bottom)
+        lower_boundary = None
+        for i in range(center, n_rows):
+            if column[i] != 0:
+                lower_boundary = i
+                break
+
+        # Skip if no zero region found
+        if upper_boundary is None or lower_boundary is None:
+            continue
+        if upper_boundary >= lower_boundary - 1:
+            continue
+
+        # Get boundary values
+        upper_val = column[upper_boundary]
+        lower_val = column[lower_boundary]
+
+        # Fill ONLY the zero region with Gaussian decay towards zero
+        for i in range(upper_boundary + 1, lower_boundary):
+            # Only modify if the original value is zero
+            if sinogram[i, col] != 0:
+                continue
+
+            # Distance from each boundary
+            dist_from_upper = i - upper_boundary
+            dist_from_lower = lower_boundary - i
+
+            # Gaussian decay towards zero from each boundary
+            contribution_upper = upper_val * np.exp(-(dist_from_upper**2) / (2 * sigma**2))
+            contribution_lower = lower_val * np.exp(-(dist_from_lower**2) / (2 * sigma**2))
+
+            # Sum the contributions (both decay towards zero)
+            result[i, col] = contribution_upper + contribution_lower
+
+    return result
+
+
 def make_rocket_phantom():
     N = 251
     X = make_ellipse_thickness(intensity=1.0, thickness=0.05, axis_a=0.44, axis_b=0.3, center_x=0.5, center_y=0.5, shape=(N, N))
