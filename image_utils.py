@@ -210,3 +210,26 @@ def make_rocket_phantom(N: int = 251, use_inf: bool = True):
     X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.1, center_x=0.5, center_y=0.5, shape=(N, N))
 
     return X
+
+def make_simple_rocket_phantom(N: int = 251, use_inf: bool = True):
+    # Try to construct a phantom that would lead to exterior problem
+    X = make_ellipse_thickness(intensity=1.0, thickness=0.05, axis_a=0.44, axis_b=0.3, center_x=0.5, center_y=0.5, shape=(N, N))
+
+    X += make_ellipse(intensity=3.0, axis_a=0.08, axis_b=0.06, center_x=0.5, center_y=0.2, shape=(N, N))
+    X += make_ellipse(intensity=4.0, axis_a=0.05, axis_b=0.05, center_x=0.37, center_y=0.31, shape=(N, N))
+
+    # Impenetrable center circle
+    INTENSITY_CENTER_SENTINEL = 100
+    X += make_ellipse_thickness(thickness=0.025, intensity=INTENSITY_CENTER_SENTINEL, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
+
+    if use_inf:
+        X[X==INTENSITY_CENTER_SENTINEL] = np.inf
+
+    # Bottom grill
+    X += make_rectangle(intensity=3.5, width=0.20, height=0.075, center_x=0.5, center_y=0.78, shape=(N, N))
+
+    # Center treasure
+    X += make_ellipse(intensity=4.0, axis_a=0.1, axis_b=0.03, center_x=0.5, center_y=0.5, shape=(N, N))
+    X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.1, center_x=0.5, center_y=0.5, shape=(N, N))
+
+    return X
