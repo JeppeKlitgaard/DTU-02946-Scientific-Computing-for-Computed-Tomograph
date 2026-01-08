@@ -184,23 +184,27 @@ def smooth_zero_center(sinogram, sigma=10.0):
     return result
 
 
-def make_rocket_phantom():
+def make_rocket_phantom(use_inf: bool = True):
+    # Try to construct a phantom that would lead to exterior problem
     N = 251
     X = make_ellipse_thickness(intensity=1.0, thickness=0.05, axis_a=0.44, axis_b=0.3, center_x=0.5, center_y=0.5, shape=(N, N))
 
     X += make_ellipse(intensity=3.0, axis_a=0.08, axis_b=0.05, center_x=0.5, center_y=0.2, shape=(N, N))
     X += make_ellipse(intensity=5.0, axis_a=0.03, axis_b=0.03, center_x=0.40, center_y=0.22, shape=(N, N))
     X += make_ellipse(intensity=2.0, axis_a=0.03, axis_b=0.03, center_x=0.60, center_y=0.22, shape=(N, N))
+    X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.03, center_x=0.40, center_y=0.33, shape=(N, N))
 
     # Impenetrable center circle
-    INTENSITY_CENTER = 100
-    X += make_ellipse_thickness(thickness=0.01, intensity=INTENSITY_CENTER, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
-    # X[X==INTENSITY_CENTER] = np.inf
+    INTENSITY_CENTER_SENTINEL = 100
+    X += make_ellipse_thickness(thickness=0.01, intensity=INTENSITY_CENTER_SENTINEL, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
+
+    if use_inf:
+        X[X==INTENSITY_CENTER_SENTINEL] = np.inf
 
     # Bottom grill
     X += make_rectangle(intensity=2.5, width=0.03, height=0.1, center_x=0.4, center_y=0.78, shape=(N, N))
     X += make_rectangle(intensity=3.5, width=0.03, height=0.1, center_x=0.5, center_y=0.78, shape=(N, N))
-    X += make_rectangle(intensity=2.5, width=0.03, height=0.1, center_x=0.6, center_y=0.78, shape=(N, N))
+    X += make_rectangle(intensity=2.5, width=0.03, height=0.1, center_x=0.6, center_y=0.7, shape=(N, N))
 
     # Center treasure
     X += make_ellipse(intensity=4.0, axis_a=0.1, axis_b=0.03, center_x=0.5, center_y=0.5, shape=(N, N))
