@@ -1131,7 +1131,7 @@ def interactive_missing_angles_picker(
         ax_line.clear()
         ax_line.plot(theta_deg, values, color='tab:blue', lw=1.5)
         ax_line.set_xlabel("Angle (deg)")
-        ax_line.set_ylabel("Sinogram value\n(along ray through pixel)")
+        ax_line.set_ylabel("Intensity values\n(Measured through pixel)")
         ax_line.set_title(f"Pixel {pixel_rc} — per-angle value")
         ax_line.set_xlim(0,180)
         # Optional: show baseline at 0 (handy for intensity)
