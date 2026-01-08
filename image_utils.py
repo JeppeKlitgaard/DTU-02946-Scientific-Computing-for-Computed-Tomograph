@@ -184,9 +184,8 @@ def smooth_zero_center(sinogram, sigma=10.0):
     return result
 
 
-def make_rocket_phantom(use_inf: bool = True):
+def make_rocket_phantom(N: int = 251, use_inf: bool = True):
     # Try to construct a phantom that would lead to exterior problem
-    N = 251
     X = make_ellipse_thickness(intensity=1.0, thickness=0.05, axis_a=0.44, axis_b=0.3, center_x=0.5, center_y=0.5, shape=(N, N))
 
     X += make_ellipse(intensity=3.0, axis_a=0.08, axis_b=0.05, center_x=0.5, center_y=0.2, shape=(N, N))
