@@ -195,7 +195,7 @@ def make_rocket_phantom(N: int = 251, use_inf: bool = True):
 
     # Impenetrable center circle
     INTENSITY_CENTER_SENTINEL = 100
-    X += make_ellipse_thickness(thickness=0.01, intensity=INTENSITY_CENTER_SENTINEL, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
+    X += make_ellipse_thickness(thickness=0.025, intensity=INTENSITY_CENTER_SENTINEL, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
 
     if use_inf:
         X[X==INTENSITY_CENTER_SENTINEL] = np.inf
