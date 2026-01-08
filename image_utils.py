@@ -227,11 +227,11 @@ def make_simple_rocket_phantom(N: int = 251, use_inf: bool = True):
 
     # Bottom grill
     X += make_rectangle(intensity=3.5, width=0.20, height=0.075, center_x=0.5, center_y=0.78, shape=(N, N))
-    
+
     # Center treasure
     X += make_ellipse(intensity=4.0, axis_a=0.1, axis_b=0.03, center_x=0.5, center_y=0.5, shape=(N, N))
     X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.1, center_x=0.5, center_y=0.5, shape=(N, N))
-    
+
     return X
 
 def make_rocket_phantom2(N: int = 251, use_inf: bool = True):
@@ -242,19 +242,19 @@ def make_rocket_phantom2(N: int = 251, use_inf: bool = True):
     X += make_ellipse(intensity=5.0, axis_a=0.03, axis_b=0.03, center_x=0.40, center_y=0.22, shape=(N, N))
     X += make_ellipse(intensity=2.0, axis_a=0.03, axis_b=0.03, center_x=0.60, center_y=0.22, shape=(N, N))
     X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.03, center_x=0.40, center_y=0.33, shape=(N, N))
-    
+
     # Impenetrable center circle
     INTENSITY_CENTER_SENTINEL = 100
     DO_INTENSITY_CENTER_INF_CONVERSION = True
     X += make_ellipse_thickness(thickness=0.01, intensity=INTENSITY_CENTER_SENTINEL, axis_a=0.15, axis_b=0.2, center_x=0.5, center_y=0.5, theta=30, shape=(N, N))
-    
+
     if DO_INTENSITY_CENTER_INF_CONVERSION:
         X[X==INTENSITY_CENTER_SENTINEL] = np.inf
 
     # Bottom sticks
     X += make_ellipse(intensity=3.0, axis_a=0.01, axis_b=0.06, center_x=0.5, center_y=0.78, shape=(N, N),theta=90)
     X += make_ellipse(intensity=3.0, axis_a=0.01, axis_b=0.06, center_x=0.59, center_y=0.65, shape=(N, N),theta=30)
-    
+
     # Center treasure
     X += make_ellipse(intensity=4.0, axis_a=0.1, axis_b=0.03, center_x=0.5, center_y=0.5, shape=(N, N))
     X += make_ellipse(intensity=4.0, axis_a=0.03, axis_b=0.1, center_x=0.5, center_y=0.5, shape=(N, N))
@@ -300,7 +300,7 @@ def plot_radon_rays_skimage(
     det_pix = np.arange(N)
 
     # Correct detector coordinate mapping (skimage scanner geometry)
-    t_vals = det_pix - (N - 1) / 2.0  
+    t_vals = det_pix - (N - 1) / 2.0
 
     # Convert angle array to radians
     theta_rad = np.deg2rad(theta_deg)
@@ -1241,6 +1241,3 @@ def interactive_missing_angles_picker(
 
     fig.canvas.mpl_connect("button_press_event", onclick)
     return fig
-
-
->>>>>>> 1e0a019 (phantoms and fancy plotting)
