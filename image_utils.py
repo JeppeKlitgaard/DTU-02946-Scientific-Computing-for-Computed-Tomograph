@@ -1241,3 +1241,95 @@ def interactive_missing_angles_picker(
 
     fig.canvas.mpl_connect("button_press_event", onclick)
     return fig
+
+
+# =============================================================================
+# FA18 Functions (Python ports)
+# Ref.: Computed Tomography: Algorithms, Insight and Just Enough Theory
+# P. C. Hansen, J. S. Jorgensen, W. R. B. Lionheart (Eds.)
+# Fundamentals of Algorithms, FA18, SIAM, Philadelphia, PA, 2021.
+# =============================================================================
+
+def matrix_to_disk_domain(A: np.ndarray) -> np.ndarray:
+    """
+    Remove columns of A corresponding to pixels outside disk.
+
+    Parameters:
+        A: System matrix corresponding to N-by-N domain (shape: m x N^2)
+
+    Returns:
+        A matrix corresponding to all those pixels inside a disc that
+        just fits the N-by-N domain.
+    """
+    N = int(np.sqrt(A.shape[1]))
+    if N * N != A.shape[1]:
+        raise ValueError("Illegal number of columns in A")
+
+    # Create the logical mask that removes columns corresponding to pixels
+    # outside the disk (using 0-indexed coordinates)
+    h = (N - 1) / 2  # center in 0-indexed
+    hh = N / 2       # radius
+
+    II, JJ = np.meshgrid(np.arange(N), np.arange(N))
+    M = (II - h) ** 2 + (JJ - h) ** 2 > hh ** 2
+    cmask = M.flatten()
+
+    # Remove the unwanted columns
+    return A[:, ~cmask]
+
+
+def vector_to_disk_domain(x: np.ndarray) -> np.ndarray:
+    """
+    Remove elements of x corresponding to pixels outside disk.
+
+    Parameters:
+        x: Vector corresponding to an N-by-N domain (length N^2)
+
+    Returns:
+        Vector corresponding to those pixels inside a disc that just
+        fits the N-by-N domain.
+    """
+    N = int(np.sqrt(len(x)))
+    if N * N != len(x):
+        raise ValueError("Illegal number of elements in x")
+
+    # Create the logical mask that removes elements corresponding to pixels
+    # outside the disk (using 0-indexed coordinates)
+    h = (N - 1) / 2  # center in 0-indexed
+    hh = N / 2       # radius
+
+    II, JJ = np.meshgrid(np.arange(N), np.arange(N))
+    M = (II - h) ** 2 + (JJ - h) ** 2 > hh ** 2
+    cmask = M.flatten()
+
+    # Remove the unwanted elements
+    return x[~cmask]
+
+
+def vector_to_rect_domain(x: np.ndarray, N: int) -> np.ndarray:
+    """
+    Transform "short" vector x (disk domain) to N-by-N array.
+
+    Parameters:
+        x: Vector whose elements correspond to a disk domain
+        N: Size of the output N-by-N array
+
+    Returns:
+        An N-by-N array in which elements outside the disk are NaN.
+    """
+    # Create the logical mask for pixels outside the disk
+    h = (N - 1) / 2  # center in 0-indexed
+    hh = N / 2       # radius
+
+    II, JJ = np.meshgrid(np.arange(N), np.arange(N))
+    M = (II - h) ** 2 + (JJ - h) ** 2 > hh ** 2
+    mask = M.flatten()
+
+    # Get indices of pixels inside the disk
+    indx = np.where(~mask)[0]
+
+    # Create output array filled with NaN
+    z = np.full(N * N, np.nan)
+    z[indx] = x
+
+    return z.reshape(N, N)
